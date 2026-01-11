@@ -15,16 +15,7 @@ import tempfile
 import time
 
 # Check if cv2.face is available
-try:
-    FACE_RECOGNITION_AVAILABLE = hasattr(cv2, 'face') and hasattr(cv2.face, 'LBPHFaceRecognizer_create')
-    # Test if we can actually create a recognizer
-    if FACE_RECOGNITION_AVAILABLE:
-        try:
-            cv2.face.LBPHFaceRecognizer_create()
-        except (AttributeError, TypeError):
-            FACE_RECOGNITION_AVAILABLE = False
-except Exception:
-    FACE_RECOGNITION_AVAILABLE = False
+FACE_RECOGNITION_AVAILABLE = hasattr(cv2, 'face') and hasattr(cv2.face, 'LBPHFaceRecognizer_create')
 
 # Add src to path
 import sys
