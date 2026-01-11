@@ -1,0 +1,24 @@
+# Real-Time Face Recognition Dependencies (OpenCV Version)
+# =========================================================
+# Compatible with Python 3.14+
+#
+# INSTALLATION INSTRUCTIONS:
+# ==========================
+# For Python 3.14+, install in this order:
+#
+#   pip install numpy --pre
+#   pip install opencv-python opencv-contrib-python pillow --no-deps
+#
+# Or for Python 3.10-3.13:
+#
+#   pip install -r requirements.txt
+
+# OpenCV for video capture, face detection, and recognition
+opencv-python>=4.8.0
+opencv-contrib-python>=4.8.0
+
+# NumPy for numerical operations
+numpy>=1.26.0
+
+# Pillow for image handling
+Pillow>=10.0.0
