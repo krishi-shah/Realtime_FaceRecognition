@@ -26,6 +26,9 @@ desktop.ini
 # Project specific
 *.docx
 
+# Streamlit
+.streamlit/secrets.toml
+
 # Models (optional - uncomment if models are too large)
 # models/
 
