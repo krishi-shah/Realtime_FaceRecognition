@@ -140,9 +140,12 @@ def get_training_stats():
 
 def train_recognition_model():
     """Train the face recognition model"""
+    if not FACE_RECOGNITION_AVAILABLE or FaceTrainer is None:
+        return False, "OpenCV face module not available. Make sure opencv-contrib-python is installed."
+    
     try:
         trainer = FaceTrainer()
-    except AttributeError as e:
+    except (AttributeError, TypeError) as e:
         return False, f"OpenCV face module not available. Make sure opencv-contrib-python is installed. Error: {str(e)}"
     
     if not os.path.exists(config.TRAINING_DIR):
