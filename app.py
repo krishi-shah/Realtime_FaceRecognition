@@ -15,12 +15,7 @@ import tempfile
 import time
 
 # Check if cv2.face is available
-try:
-    cv2.face.LBPHFaceRecognizer_create()
-    FACE_RECOGNITION_AVAILABLE = True
-except AttributeError:
-    FACE_RECOGNITION_AVAILABLE = False
-    st.error("⚠️ OpenCV face module not available. Make sure opencv-contrib-python is installed.")
+FACE_RECOGNITION_AVAILABLE = hasattr(cv2, 'face') and hasattr(cv2.face, 'LBPHFaceRecognizer_create')
 
 # Add src to path
 import sys
