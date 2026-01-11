@@ -15,7 +15,16 @@ import tempfile
 import time
 
 # Check if cv2.face is available
-FACE_RECOGNITION_AVAILABLE = hasattr(cv2, 'face') and hasattr(cv2.face, 'LBPHFaceRecognizer_create')
+try:
+    FACE_RECOGNITION_AVAILABLE = hasattr(cv2, 'face') and hasattr(cv2.face, 'LBPHFaceRecognizer_create')
+    # Test if we can actually create a recognizer
+    if FACE_RECOGNITION_AVAILABLE:
+        try:
+            cv2.face.LBPHFaceRecognizer_create()
+        except (AttributeError, TypeError):
+            FACE_RECOGNITION_AVAILABLE = False
+except Exception:
+    FACE_RECOGNITION_AVAILABLE = False
 
 # Add src to path
 import sys
@@ -24,10 +33,13 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from src import config
 
 # Only import FaceTrainer if cv2.face is available
+FaceTrainer = None
 if FACE_RECOGNITION_AVAILABLE:
-    from src.encode_faces import FaceTrainer
-else:
-    FaceTrainer = None
+    try:
+        from src.encode_faces import FaceTrainer
+    except (AttributeError, ImportError, TypeError):
+        FACE_RECOGNITION_AVAILABLE = False
+        FaceTrainer = None
 
 # Page config
 st.set_page_config(
