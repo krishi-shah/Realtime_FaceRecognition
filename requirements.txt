@@ -14,9 +14,10 @@
 #   pip install -r requirements.txt
 
 # OpenCV for video capture, face detection, and recognition
-# Note: opencv-contrib-python includes opencv-python + contrib modules
+# Note: Use headless version for cloud/serverless deployments (like Streamlit Cloud)
+# opencv-contrib-python-headless includes opencv-python + contrib modules without GUI dependencies
 # DO NOT install both opencv-python and opencv-contrib-python together!
-opencv-contrib-python>=4.8.0
+opencv-contrib-python-headless>=4.8.0
 
 # NumPy for numerical operations
 numpy>=1.26.0
