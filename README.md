@@ -4,6 +4,16 @@ A Python application that uses **OpenCV's LBPH (Local Binary Pattern Histogram)*
 
 **✅ Compatible with Python 3.14+ and Windows!**
 
+## 🌐 Live Demo
+
+**Try it now:** [https://realtime-face-recognition.streamlit.app/](https://realtime-face-recognition.streamlit.app/)
+
+The web app allows you to:
+- 📸 Capture training images using your browser's camera
+- 🎓 Train face recognition models
+- 🔍 Recognize faces in real-time
+- 📊 View system statistics and dashboard
+
 ## ✨ Features
 
 - **LBPH Face Recognition**: Fast and effective algorithm built into OpenCV
@@ -26,6 +36,7 @@ A Python application that uses **OpenCV's LBPH (Local Binary Pattern Histogram)*
 - `opencv-python` - Video capture and image processing
 - `opencv-contrib-python` - LBPH Face Recognizer
 - `numpy` - Numerical operations
+- `streamlit` - Web app framework (for web deployment)
 
 ## 🚀 Installation
 
@@ -97,6 +108,38 @@ python main.py --all
 python main.py --status
 ```
 
+### Web App (Streamlit)
+
+For the web-based interface:
+
+```bash
+# Install Streamlit
+pip install streamlit
+
+# Run the web app
+streamlit run app.py
+```
+
+This opens a browser-based interface with:
+- 📸 Camera-based training image capture
+- 🎓 Interactive model training
+- 🔍 Real-time face recognition
+- 📊 System dashboard and statistics
+
+## 🌐 Web Deployment (Streamlit Cloud)
+
+This app is deployed and running at: **[https://realtime-face-recognition.streamlit.app/](https://realtime-face-recognition.streamlit.app/)**
+
+### Deploy Your Own
+
+1. Fork this repository
+2. Go to [Streamlit Cloud](https://share.streamlit.io/)
+3. Click "New app"
+4. Select your repository and set main file to `app.py`
+5. Click "Deploy!"
+
+**Note:** The web app uses browser camera access - users must grant camera permissions.
+
 ## 🎯 Quick Start Guide
 
 ### 1. Capture Training Images
@@ -167,22 +210,26 @@ MIN_FACE_SIZE = (100, 100)
 
 ```
 Realtime_faceRecognition/
-├── main.py                 # Main entry point
+├── main.py                 # Desktop app entry point
+├── app.py                  # Streamlit web app entry point
 ├── requirements.txt        # Python dependencies
-├── README.md              # This file
+├── packages.txt            # System dependencies (for Streamlit Cloud)
+├── README.md               # This file
+├── .streamlit/
+│   └── config.toml         # Streamlit configuration
 ├── src/
 │   ├── __init__.py
-│   ├── config.py          # Configuration settings
+│   ├── config.py           # Configuration settings
 │   ├── capture_training_images.py  # Training image capture
-│   ├── encode_faces.py    # Model training (LBPH)
-│   └── recognize_faces.py # Real-time recognition
+│   ├── encode_faces.py     # Model training (LBPH)
+│   └── recognize_faces.py  # Real-time recognition
 ├── data/
-│   └── training/          # Training images by person
-│       └── Person_Name/   # Folder for each person
+│   └── training/           # Training images by person
+│       └── Person_Name/    # Folder for each person
 ├── models/
 │   ├── face_recognizer.yml # Trained LBPH model
-│   └── labels.pkl         # Name-label mappings
-└── screenshots/           # Saved screenshots
+│   └── labels.pkl          # Name-label mappings
+└── screenshots/            # Saved screenshots
 ```
 
 ## 🔧 Troubleshooting
