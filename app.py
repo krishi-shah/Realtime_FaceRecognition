@@ -14,12 +14,25 @@ from PIL import Image
 import tempfile
 import time
 
+# Check if cv2.face is available
+try:
+    cv2.face.LBPHFaceRecognizer_create()
+    FACE_RECOGNITION_AVAILABLE = True
+except AttributeError:
+    FACE_RECOGNITION_AVAILABLE = False
+    st.error("⚠️ OpenCV face module not available. Make sure opencv-contrib-python is installed.")
+
 # Add src to path
 import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from src import config
-from src.encode_faces import FaceTrainer
+
+# Only import FaceTrainer if cv2.face is available
+if FACE_RECOGNITION_AVAILABLE:
+    from src.encode_faces import FaceTrainer
+else:
+    FaceTrainer = None
 
 # Page config
 st.set_page_config(
@@ -132,7 +145,10 @@ def get_training_stats():
 
 def train_recognition_model():
     """Train the face recognition model"""
-    trainer = FaceTrainer()
+    try:
+        trainer = FaceTrainer()
+    except AttributeError as e:
+        return False, f"OpenCV face module not available. Make sure opencv-contrib-python is installed. Error: {str(e)}"
     
     if not os.path.exists(config.TRAINING_DIR):
         return False, "Training directory not found"
@@ -147,19 +163,27 @@ def train_recognition_model():
     status_text = st.empty()
     
     try:
-        trainer.prepare_training_data(progress_callback=lambda p, m: (
-            progress_bar.progress(p), status_text.text(m)
-        ))
-        trainer.train()
-        trainer.save_model()
+        status_text.text("Starting training...")
+        progress_bar.progress(10)
         
-        # Load into session state
-        st.session_state.trained_model = trainer.recognizer
-        st.session_state.label_ids = trainer.label_ids
+        # Train the model
+        success_count, fail_count = trainer.train()
         
-        progress_bar.progress(100)
-        status_text.text("✓ Training complete!")
-        return True, f"Model trained successfully with {len(persons)} person(s)"
+        progress_bar.progress(80)
+        status_text.text("Saving model...")
+        
+        if success_count > 0:
+            trainer.save_model()
+            
+            # Load into session state
+            st.session_state.trained_model = trainer.recognizer
+            st.session_state.label_ids = trainer.name_to_label
+            
+            progress_bar.progress(100)
+            status_text.text("✓ Training complete!")
+            return True, f"Model trained successfully with {len(persons)} person(s), {success_count} images processed"
+        else:
+            return False, "No images were successfully processed"
     except Exception as e:
         return False, f"Training failed: {str(e)}"
 
@@ -172,12 +196,16 @@ def load_trained_model():
             recognizer.read(config.MODEL_FILE)
             
             with open(config.LABELS_FILE, 'rb') as f:
-                labels = pickle.load(f)
+                labels_data = pickle.load(f)
             
             st.session_state.trained_model = recognizer
-            st.session_state.label_ids = labels
+            # Use name_to_label dict from saved labels
+            st.session_state.label_ids = labels_data.get("name_to_label", labels_data)
             return True
-        except:
+        except AttributeError:
+            # cv2.face not available
+            return False
+        except Exception:
             return False
     return False
 
@@ -191,8 +219,12 @@ def recognize_face(face_gray, recognizer, label_ids, threshold):
     label, confidence = recognizer.predict(face_resized)
     
     if confidence < threshold:
-        name = list(label_ids.keys())[list(label_ids.values()).index(label)]
-        return name, confidence
+        # label_ids is name_to_label dict: {name: label_id}
+        # Find name by label_id
+        for name, label_id in label_ids.items():
+            if label_id == label:
+                return name, confidence
+        return "Unknown", confidence
     else:
         return "Unknown", confidence
 
@@ -386,6 +418,11 @@ def show_training_page():
 def show_recognition_page():
     """Show face recognition page"""
     st.header("🔍 Face Recognition")
+    
+    if not FACE_RECOGNITION_AVAILABLE:
+        st.error("❌ Face recognition module not available. Please check installation.")
+        st.info("Make sure `opencv-contrib-python` is installed: `pip install opencv-contrib-python`")
+        return
     
     if st.session_state.trained_model is None:
         st.error("❌ No trained model found. Please train a model first.")

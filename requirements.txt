@@ -7,14 +7,15 @@
 # For Python 3.14+, install in this order:
 #
 #   pip install numpy --pre
-#   pip install opencv-python opencv-contrib-python pillow --no-deps
+#   pip install opencv-contrib-python pillow streamlit --no-deps
 #
 # Or for Python 3.10-3.13:
 #
 #   pip install -r requirements.txt
 
 # OpenCV for video capture, face detection, and recognition
-opencv-python>=4.8.0
+# Note: opencv-contrib-python includes opencv-python + contrib modules
+# DO NOT install both opencv-python and opencv-contrib-python together!
 opencv-contrib-python>=4.8.0
 
 # NumPy for numerical operations
@@ -22,3 +23,6 @@ numpy>=1.26.0
 
 # Pillow for image handling
 Pillow>=10.0.0
+
+# Streamlit for web app
+streamlit>=1.28.0
