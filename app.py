@@ -634,12 +634,28 @@ def main():
         st.divider()
         st.markdown("### 📦 MODEL STATUS")
         if st.session_state.trained_model is not None:
-            st.success(f"✓ Active Model\n**{len(st.session_state.label_ids)} Person(s)**")
-            for name in st.session_state.label_ids.keys():
+            # Get person names from label_to_names or label_ids
+            if 'label_to_names' in st.session_state and st.session_state.label_to_names:
+                person_list = list(st.session_state.label_to_names.values())
+            elif st.session_state.label_ids:
+                person_list = list(st.session_state.label_ids.keys())
+            else:
+                person_list = []
+            
+            num_persons = len(person_list)
+            st.success(f"✓ Active Model\n**{num_persons} Person(s)**")
+            for name in person_list[:5]:  # Show max 5
                 st.write(f"• {name}")
         else:
             if load_trained_model():
-                st.success(f"✓ Model Loaded\n**{len(st.session_state.label_ids)} Person(s)**")
+                if 'label_to_names' in st.session_state and st.session_state.label_to_names:
+                    person_list = list(st.session_state.label_to_names.values())
+                elif st.session_state.label_ids:
+                    person_list = list(st.session_state.label_ids.keys())
+                else:
+                    person_list = []
+                num_persons = len(person_list)
+                st.success(f"✓ Model Loaded\n**{num_persons} Person(s)**")
             else:
                 st.warning("⚠ No Model")
                 st.caption("Train a model first")
