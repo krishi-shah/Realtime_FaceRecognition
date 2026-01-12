@@ -592,7 +592,9 @@ def main():
     st.markdown("""
     <div style='text-align: center; padding: 2rem 0;'>
         <h1>🔮 FACE RECOGNITION SYSTEM</h1>
-        <p style='color: #9d4edd; font-size: 1.1rem; margin-top: -1rem;'>Neural Network Powered Identification</p>
+        <p style='color: #9d4edd; font-size: 1.2rem; margin-top: -0.5rem; letter-spacing: 2px; font-weight: 600;'>
+            ⚡ NEURAL NETWORK POWERED IDENTIFICATION ⚡
+        </p>
     </div>
     """, unsafe_allow_html=True)
     
