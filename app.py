@@ -40,13 +40,50 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Modern Sci-Fi Theme CSS
+# Premium Sci-Fi Theme CSS with Animations
 st.markdown("""
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap');
+    
+    /* Keyframe Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateX(-30px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    
+    @keyframes glow {
+        0%, 100% { text-shadow: 0 0 10px #00f5ff, 0 0 20px #00f5ff, 0 0 30px #00f5ff; }
+        50% { text-shadow: 0 0 20px #00f5ff, 0 0 30px #00f5ff, 0 0 40px #00f5ff, 0 0 50px #00f5ff; }
+    }
+    
+    @keyframes pulse {
+        0%, 100% { box-shadow: 0 0 20px rgba(0, 245, 255, 0.4); }
+        50% { box-shadow: 0 0 30px rgba(0, 245, 255, 0.8), 0 0 40px rgba(0, 245, 255, 0.6); }
+    }
+    
+    @keyframes gradient-shift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+    
     /* Main App Styling */
     .stApp {
         background: linear-gradient(135deg, #0a0e27 0%, #1a1a2e 50%, #16213e 100%);
+        background-size: 400% 400%;
+        animation: gradient-shift 15s ease infinite;
         color: #e0e0e0;
+        font-family: 'Rajdhani', sans-serif;
     }
     
     /* Hide Streamlit Branding */
@@ -54,181 +91,347 @@ st.markdown("""
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
-    /* Headers */
+    /* Headers with Animations */
     h1 {
         color: #00f5ff !important;
         text-align: center;
-        font-size: 2.5rem !important;
-        font-weight: 700 !important;
+        font-size: 3rem !important;
+        font-weight: 900 !important;
+        font-family: 'Orbitron', sans-serif !important;
         text-shadow: 0 0 10px #00f5ff, 0 0 20px #00f5ff, 0 0 30px #00f5ff;
         margin-bottom: 0.5rem !important;
-        letter-spacing: 2px;
+        letter-spacing: 3px;
+        animation: fadeIn 1s ease-out, glow 3s ease-in-out infinite;
+        background: linear-gradient(90deg, #00f5ff 0%, #9d4edd 50%, #00f5ff 100%);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: fadeIn 1s ease-out, glow 3s ease-in-out infinite, gradient-shift 3s linear infinite;
     }
     
     h2 {
         color: #9d4edd !important;
-        font-size: 1.8rem !important;
-        font-weight: 600 !important;
-        text-shadow: 0 0 5px #9d4edd;
+        font-size: 2rem !important;
+        font-weight: 700 !important;
+        font-family: 'Orbitron', sans-serif !important;
+        text-shadow: 0 0 10px #9d4edd;
         margin-top: 1.5rem !important;
         border-bottom: 2px solid #9d4edd;
         padding-bottom: 0.5rem;
+        animation: fadeIn 0.8s ease-out;
+        position: relative;
+    }
+    
+    h2::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #9d4edd, #00f5ff);
+        animation: slideIn 1s ease-out 0.5s forwards;
     }
     
     h3 {
         color: #ff6b6b !important;
-        font-size: 1.4rem !important;
+        font-size: 1.6rem !important;
+        font-family: 'Rajdhani', sans-serif !important;
+        font-weight: 600 !important;
+        animation: fadeIn 0.6s ease-out;
     }
     
-    /* Buttons - Neon Glow Effect */
+    /* Buttons - Advanced Neon Effects */
     .stButton>button {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background-size: 200% 200%;
         color: white !important;
         border: none;
-        border-radius: 8px;
-        padding: 0.75rem 2rem;
-        font-weight: 600;
-        font-size: 1rem;
-        transition: all 0.3s;
-        box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4);
+        border-radius: 12px;
+        padding: 1rem 2.5rem;
+        font-weight: 700;
+        font-size: 1.1rem;
+        font-family: 'Rajdhani', sans-serif;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 8px 20px rgba(118, 75, 162, 0.4), 0 0 0 0 rgba(118, 75, 162, 0.7);
         width: 100%;
         border: 2px solid transparent;
+        position: relative;
+        overflow: hidden;
+        letter-spacing: 1px;
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    .stButton>button::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
     }
     
     .stButton>button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(118, 75, 162, 0.6);
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 12px 30px rgba(118, 75, 162, 0.6), 0 0 0 8px rgba(118, 75, 162, 0.1);
+        background-position: right center;
         border: 2px solid #9d4edd;
+        animation: pulse 2s ease-in-out infinite;
+    }
+    
+    .stButton>button:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .stButton>button:active {
+        transform: translateY(-2px) scale(0.98);
+        transition: all 0.1s;
     }
     
     .stButton>button:focus {
         border: 2px solid #00f5ff;
-        box-shadow: 0 0 15px rgba(0, 245, 255, 0.5);
+        box-shadow: 0 0 25px rgba(0, 245, 255, 0.7), 0 8px 20px rgba(118, 75, 162, 0.4);
+        outline: none;
     }
     
     /* Primary Button */
     button[kind="primary"] {
-        background: linear-gradient(135deg, #00f5ff 0%, #0099cc 100%) !important;
-        box-shadow: 0 4px 15px rgba(0, 245, 255, 0.4) !important;
+        background: linear-gradient(135deg, #00f5ff 0%, #0099cc 50%, #00f5ff 100%) !important;
+        background-size: 200% 200% !important;
+        box-shadow: 0 8px 25px rgba(0, 245, 255, 0.5), 0 0 0 0 rgba(0, 245, 255, 0.7) !important;
+        animation: gradient-shift 3s ease infinite, pulse 2s ease-in-out infinite !important;
     }
     
     button[kind="primary"]:hover {
-        box-shadow: 0 6px 20px rgba(0, 245, 255, 0.6) !important;
+        box-shadow: 0 12px 35px rgba(0, 245, 255, 0.7), 0 0 0 8px rgba(0, 245, 255, 0.15) !important;
+        background-position: right center !important;
     }
     
     /* Sidebar */
     .css-1d391kg {
-        background-color: #1a1a2e;
+        background-color: rgba(26, 26, 46, 0.95);
+        backdrop-filter: blur(10px);
         border-right: 2px solid #00f5ff;
+        box-shadow: 2px 0 20px rgba(0, 245, 255, 0.2);
     }
     
-    /* Radio Buttons */
-    .stRadio label {
-        color: #e0e0e0 !important;
-        font-size: 1rem;
+    /* Tabs - Enhanced Styling */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 0.5rem;
+        background-color: rgba(26, 26, 46, 0.5);
         padding: 0.5rem;
-        border-radius: 5px;
-        transition: all 0.3s;
+        border-radius: 10px;
     }
     
-    .stRadio label:hover {
+    .stTabs [data-baseweb="tab"] {
+        background-color: transparent;
+        color: #9d4edd;
+        font-weight: 600;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 1rem;
+        letter-spacing: 1px;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+    
+    .stTabs [data-baseweb="tab"]:hover {
         background-color: rgba(157, 78, 221, 0.1);
+        color: #00f5ff;
+        transform: translateY(-2px);
+        border: 2px solid rgba(157, 78, 221, 0.3);
     }
     
-    [data-baseweb="radio"] label {
-        color: #e0e0e0 !important;
-    }
-    
-    /* Sliders */
-    .stSlider label {
-        color: #e0e0e0 !important;
-        font-weight: 500;
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(135deg, rgba(157, 78, 221, 0.3) 0%, rgba(0, 245, 255, 0.3) 100%);
+        color: #00f5ff;
+        border: 2px solid #00f5ff;
+        box-shadow: 0 4px 15px rgba(0, 245, 255, 0.4);
     }
     
     /* Text Input */
     .stTextInput>div>div>input {
-        background-color: #0f0f1e;
+        background-color: rgba(15, 15, 30, 0.8);
         color: #00f5ff;
-        border: 1px solid #00f5ff;
-        border-radius: 5px;
+        border: 2px solid #00f5ff;
+        border-radius: 8px;
+        padding: 0.75rem;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    .stTextInput>div>div>input:focus {
+        border-color: #9d4edd;
+        box-shadow: 0 0 20px rgba(157, 78, 221, 0.5);
+        outline: none;
     }
     
     .stTextInput label {
         color: #e0e0e0 !important;
-        font-weight: 500;
+        font-weight: 600;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 1.1rem;
     }
     
     /* Camera Input */
     .stCameraInput>div {
-        border: 2px solid #00f5ff;
-        border-radius: 10px;
-        box-shadow: 0 0 20px rgba(0, 245, 255, 0.3);
+        border: 3px solid #00f5ff;
+        border-radius: 15px;
+        box-shadow: 0 0 30px rgba(0, 245, 255, 0.4), 0 0 60px rgba(0, 245, 255, 0.2);
+        animation: pulse 3s ease-in-out infinite, fadeIn 0.8s ease-out;
+        overflow: hidden;
     }
     
-    /* Metrics */
+    .stCameraInput>div:hover {
+        box-shadow: 0 0 40px rgba(0, 245, 255, 0.6), 0 0 80px rgba(0, 245, 255, 0.3);
+    }
+    
+    /* Metrics with Animation */
     [data-testid="stMetricValue"] {
         color: #00f5ff !important;
-        font-size: 2rem !important;
-        font-weight: 700 !important;
-        text-shadow: 0 0 10px #00f5ff;
+        font-size: 2.5rem !important;
+        font-weight: 900 !important;
+        font-family: 'Orbitron', sans-serif !important;
+        text-shadow: 0 0 15px #00f5ff;
+        animation: fadeIn 0.8s ease-out, float 3s ease-in-out infinite;
     }
     
     [data-testid="stMetricLabel"] {
         color: #9d4edd !important;
-        font-weight: 500;
+        font-weight: 600;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 1.1rem;
+        letter-spacing: 1px;
+        animation: fadeIn 1s ease-out;
     }
     
-    /* Info/Success/Warning Boxes */
+    /* Enhanced Info/Success/Warning Boxes */
     .stSuccess {
-        background-color: rgba(0, 245, 255, 0.1);
+        background: linear-gradient(135deg, rgba(0, 245, 255, 0.15) 0%, rgba(0, 245, 255, 0.05) 100%);
         border-left: 4px solid #00f5ff;
-        border-radius: 5px;
-        padding: 1rem;
+        border-radius: 10px;
+        padding: 1.25rem;
+        box-shadow: 0 4px 15px rgba(0, 245, 255, 0.2);
+        animation: fadeIn 0.5s ease-out, slideIn 0.5s ease-out;
     }
     
     .stError {
-        background-color: rgba(255, 107, 107, 0.1);
+        background: linear-gradient(135deg, rgba(255, 107, 107, 0.15) 0%, rgba(255, 107, 107, 0.05) 100%);
         border-left: 4px solid #ff6b6b;
-        border-radius: 5px;
-        padding: 1rem;
+        border-radius: 10px;
+        padding: 1.25rem;
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.2);
+        animation: fadeIn 0.5s ease-out, slideIn 0.5s ease-out;
     }
     
     .stWarning {
-        background-color: rgba(255, 206, 84, 0.1);
+        background: linear-gradient(135deg, rgba(255, 206, 84, 0.15) 0%, rgba(255, 206, 84, 0.05) 100%);
         border-left: 4px solid #ffce54;
-        border-radius: 5px;
-        padding: 1rem;
+        border-radius: 10px;
+        padding: 1.25rem;
+        box-shadow: 0 4px 15px rgba(255, 206, 84, 0.2);
+        animation: fadeIn 0.5s ease-out, slideIn 0.5s ease-out;
     }
     
     .stInfo {
-        background-color: rgba(157, 78, 221, 0.1);
+        background: linear-gradient(135deg, rgba(157, 78, 221, 0.15) 0%, rgba(157, 78, 221, 0.05) 100%);
         border-left: 4px solid #9d4edd;
-        border-radius: 5px;
-        padding: 1rem;
+        border-radius: 10px;
+        padding: 1.25rem;
+        box-shadow: 0 4px 15px rgba(157, 78, 221, 0.2);
+        animation: fadeIn 0.5s ease-out, slideIn 0.5s ease-out;
     }
     
     /* Markdown Text */
     p, li {
         color: #d0d0d0 !important;
+        font-family: 'Rajdhani', sans-serif;
+        line-height: 1.8;
+        animation: fadeIn 0.6s ease-out;
     }
     
     /* Divider */
     hr {
-        border-color: #00f5ff;
-        opacity: 0.3;
+        border: none;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #00f5ff, transparent);
+        margin: 2rem 0;
+        animation: fadeIn 0.8s ease-out;
     }
     
-    /* Columns */
+    /* Columns with Enhanced Styling */
     [data-testid="column"] {
-        background-color: rgba(26, 26, 46, 0.5);
-        padding: 1.5rem;
-        border-radius: 10px;
-        border: 1px solid rgba(0, 245, 255, 0.2);
+        background: linear-gradient(135deg, rgba(26, 26, 46, 0.6) 0%, rgba(22, 33, 62, 0.4) 100%);
+        padding: 2rem;
+        border-radius: 15px;
+        border: 1px solid rgba(0, 245, 255, 0.3);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), inset 0 0 30px rgba(0, 245, 255, 0.05);
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+        animation: fadeIn 0.6s ease-out;
+    }
+    
+    [data-testid="column"]:hover {
+        border-color: rgba(0, 245, 255, 0.6);
+        box-shadow: 0 12px 35px rgba(0, 245, 255, 0.2), inset 0 0 40px rgba(0, 245, 255, 0.1);
+        transform: translateY(-5px);
     }
     
     /* Spinner */
     .stSpinner > div {
         border-top-color: #00f5ff !important;
+        border-width: 4px;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* Images */
+    img {
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        animation: fadeIn 0.8s ease-out;
+        transition: transform 0.3s ease;
+    }
+    
+    img:hover {
+        transform: scale(1.02);
+    }
+    
+    /* Sidebar Elements */
+    .css-1lcbmhc, .css-1cypcdb {
+        animation: slideIn 0.5s ease-out;
+    }
+    
+    /* Slider */
+    .stSlider label {
+        color: #e0e0e0 !important;
+        font-weight: 600;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 1rem;
+    }
+    
+    .stSlider [data-baseweb="slider"] {
+        background-color: rgba(0, 245, 255, 0.2);
+    }
+    
+    .stSlider [data-baseweb="slider"] > div > div {
+        background: linear-gradient(90deg, #00f5ff, #9d4edd);
+        box-shadow: 0 0 10px rgba(0, 245, 255, 0.5);
     }
 </style>
 """, unsafe_allow_html=True)
