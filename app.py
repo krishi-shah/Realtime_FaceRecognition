@@ -536,13 +536,20 @@ def train_recognition_model():
         if success_count > 0:
             trainer.save_model()
             
-            # Load into session state
+            # Load into session state with proper type conversion
             st.session_state.trained_model = trainer.recognizer
-            st.session_state.label_ids = trainer.name_to_label  # For reference
-            st.session_state.label_to_names = trainer.label_to_name  # For recognition lookup
+            st.session_state.label_ids = trainer.name_to_label  # {name: label_id}
+            # Ensure label_to_names has integer keys
+            st.session_state.label_to_names = {int(k): str(v) for k, v in trainer.label_to_name.items()}
             
             progress_bar.progress(100)
             status_text.text("✓ Training complete!")
+            
+            # Show what was loaded
+            st.success(f"Loaded {len(st.session_state.label_to_names)} person(s):")
+            for label_id, name in st.session_state.label_to_names.items():
+                st.write(f"  - Label {label_id}: {name}")
+            
             return True, f"Model trained successfully with {len(persons)} person(s), {success_count} images processed"
         else:
             return False, "No images were successfully processed"
