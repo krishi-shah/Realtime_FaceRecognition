@@ -447,6 +447,10 @@ def init_session_state():
         st.session_state.capture_count = 0
     if 'recognition_threshold' not in st.session_state:
         st.session_state.recognition_threshold = config.RECOGNITION_THRESHOLD
+    if 'recognition_active' not in st.session_state:
+        st.session_state.recognition_active = False
+    if 'frame_counter' not in st.session_state:
+        st.session_state.frame_counter = 0
 
 
 def load_face_detector():
@@ -761,7 +765,7 @@ def show_training_page():
 
 
 def show_recognition_page():
-    """Show face recognition page"""
+    """Show face recognition page with real-time continuous recognition"""
     st.markdown("<br>", unsafe_allow_html=True)
     
     if not FACE_RECOGNITION_AVAILABLE:
@@ -776,52 +780,124 @@ def show_recognition_page():
     
     col1, col2 = st.columns([2, 1])
     
-    with col1:
-        st.markdown("### 🔍 Live Recognition")
-        img_file = st.camera_input("Enable camera to start", key="recognition_camera")
-        
-        if img_file is not None:
-            image = Image.open(img_file)
-            image_np = np.array(image)
-            image_bgr = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
-            
-            face_cascade = load_face_detector()
-            faces, gray = detect_faces(image_bgr, face_cascade)
-            
-            detected_names = []
-            
-            for (x, y, w, h) in faces:
-                face_gray = gray[y:y+h, x:x+w]
-                name, confidence = recognize_face(
-                    face_gray,
-                    st.session_state.trained_model,
-                    st.session_state.label_ids,
-                    st.session_state.recognition_threshold
-                )
-                
-                color = (0, 255, 0) if name != "Unknown" else (0, 0, 255)
-                cv2.rectangle(image_np, (x, y), (x+w, y+h), color, 3)
-                label = f"{name} ({confidence:.1f})"
-                cv2.putText(image_np, label, (x, y-10),
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
-                detected_names.append((name, confidence))
-            
-            st.image(image_np, use_container_width=True)
-    
     with col2:
+        st.markdown("### 🎮 Controls")
+        
+        # Start/Stop button
+        if not st.session_state.recognition_active:
+            if st.button("▶️ START LIVE RECOGNITION", type="primary", use_container_width=True):
+                st.session_state.recognition_active = True
+                st.session_state.frame_counter = 0
+                st.rerun()
+        else:
+            if st.button("⏸️ STOP RECOGNITION", use_container_width=True):
+                st.session_state.recognition_active = False
+                st.rerun()
+        
+        st.markdown("---")
         st.markdown("### 📊 Status")
+        status_color = "#00f5ff" if st.session_state.recognition_active else "#9d4edd"
+        status_text = "🟢 LIVE" if st.session_state.recognition_active else "⚫ IDLE"
+        st.markdown(f'<p style="color: {status_color}; font-size: 1.2rem; font-weight: 700;">{status_text}</p>', unsafe_allow_html=True)
         st.metric("Threshold", st.session_state.recognition_threshold)
         st.metric("Persons", len(st.session_state.label_ids))
+        if st.session_state.recognition_active:
+            st.metric("Frames Processed", st.session_state.frame_counter)
+        
         st.markdown("---")
         st.markdown("### 👤 Detected")
-        if img_file is not None and detected_names:
-            for name, conf in detected_names:
-                if name != "Unknown":
-                    st.success(f"**{name}**\n*Confidence: {conf:.1f}*")
-                else:
-                    st.warning(f"**Unknown**\n*Confidence: {conf:.1f}*")
+        detected_placeholder = st.empty()
+    
+    with col1:
+        st.markdown("### 🔍 Real-Time Face Recognition")
+        
+        # Camera input with dynamic key for continuous updates
+        camera_key = f"recognition_camera_{st.session_state.frame_counter}"
+        img_file = st.camera_input(
+            "Camera Feed - Recognition Active" if st.session_state.recognition_active else "Click START to begin live recognition",
+            key=camera_key,
+            disabled=not st.session_state.recognition_active
+        )
+        
+        # Video placeholder for continuous updates
+        video_placeholder = st.empty()
+        
+        if st.session_state.recognition_active:
+            if img_file is not None:
+                # Process the frame
+                image = Image.open(img_file)
+                image_np = np.array(image)
+                image_bgr = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
+                
+                face_cascade = load_face_detector()
+                faces, gray = detect_faces(image_bgr, face_cascade)
+                
+                detected_names = []
+                
+                # Process each detected face
+                for (x, y, w, h) in faces:
+                    face_gray = gray[y:y+h, x:x+w]
+                    name, confidence = recognize_face(
+                        face_gray,
+                        st.session_state.trained_model,
+                        st.session_state.label_ids,
+                        st.session_state.recognition_threshold
+                    )
+                    
+                    # Choose color based on recognition result
+                    if name != "Unknown":
+                        color = (0, 255, 0)  # Green for recognized
+                    else:
+                        color = (0, 0, 255)  # Red for unknown
+                    
+                    # Draw bounding box
+                    cv2.rectangle(image_np, (x, y), (x+w, y+h), color, 3)
+                    
+                    # Draw label with background for better visibility
+                    label = f"{name} ({confidence:.1f})"
+                    (text_width, text_height), baseline = cv2.getTextSize(
+                        label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2
+                    )
+                    cv2.rectangle(image_np, (x, y-text_height-15), 
+                                (x+text_width, y), color, -1)
+                    cv2.putText(image_np, label, (x, y-10),
+                               cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+                    
+                    detected_names.append((name, confidence))
+                
+                # Display processed frame
+                video_placeholder.image(image_np, use_container_width=True)
+                
+                # Update detected persons display
+                with detected_placeholder.container():
+                    if detected_names:
+                        for name, conf in detected_names:
+                            if name != "Unknown":
+                                st.success(f"**{name}**\n*Confidence: {conf:.1f}*")
+                            else:
+                                st.warning(f"**Unknown**\n*Confidence: {conf:.1f}*")
+                    else:
+                        st.caption("No faces detected")
+                
+                # Increment frame counter and continue processing
+                st.session_state.frame_counter += 1
+                
+                # Auto-refresh for continuous processing (adjust delay for desired FPS)
+                time.sleep(0.1)  # ~10 FPS for smooth recognition
+                st.rerun()
+            else:
+                video_placeholder.info("👆 Click START to begin live recognition")
         else:
-            st.caption("No faces detected")
+            if img_file is not None:
+                # Show initial frame when not active
+                image = Image.open(img_file)
+                image_np = np.array(image)
+                video_placeholder.image(image_np, use_container_width=True)
+            else:
+                video_placeholder.info("👆 Click START to begin live recognition")
+            
+            with detected_placeholder.container():
+                st.caption("Recognition not active")
 
 
 if __name__ == "__main__":
