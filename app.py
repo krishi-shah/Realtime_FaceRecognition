@@ -34,50 +34,201 @@ if FACE_RECOGNITION_AVAILABLE:
 
 # Page config
 st.set_page_config(
-    page_title="Real-Time Face Recognition",
-    page_icon="🎭",
+    page_title="Face Recognition System",
+    page_icon="🔮",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
-# Custom CSS
+# Modern Sci-Fi Theme CSS
 st.markdown("""
 <style>
-    .main-header {
-        font-size: 3rem;
-        font-weight: bold;
-        text-align: center;
-        color: #1f77b4;
-        padding: 1rem;
-        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+    /* Main App Styling */
+    .stApp {
+        background: linear-gradient(135deg, #0a0e27 0%, #1a1a2e 50%, #16213e 100%);
+        color: #e0e0e0;
     }
-    .subtitle {
+    
+    /* Hide Streamlit Branding */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    
+    /* Headers */
+    h1 {
+        color: #00f5ff !important;
         text-align: center;
-        color: #666;
-        font-size: 1.2rem;
-        margin-bottom: 2rem;
+        font-size: 2.5rem !important;
+        font-weight: 700 !important;
+        text-shadow: 0 0 10px #00f5ff, 0 0 20px #00f5ff, 0 0 30px #00f5ff;
+        margin-bottom: 0.5rem !important;
+        letter-spacing: 2px;
     }
+    
+    h2 {
+        color: #9d4edd !important;
+        font-size: 1.8rem !important;
+        font-weight: 600 !important;
+        text-shadow: 0 0 5px #9d4edd;
+        margin-top: 1.5rem !important;
+        border-bottom: 2px solid #9d4edd;
+        padding-bottom: 0.5rem;
+    }
+    
+    h3 {
+        color: #ff6b6b !important;
+        font-size: 1.4rem !important;
+    }
+    
+    /* Buttons - Neon Glow Effect */
     .stButton>button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white !important;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4);
         width: 100%;
-        border-radius: 5px;
-        height: 3em;
-        font-weight: bold;
+        border: 2px solid transparent;
     }
-    .success-box {
-        padding: 1rem;
-        border-radius: 5px;
-        background-color: #d4edda;
-        border: 1px solid #c3e6cb;
-        color: #155724;
+    
+    .stButton>button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(118, 75, 162, 0.6);
+        border: 2px solid #9d4edd;
     }
-    .warning-box {
-        padding: 1rem;
+    
+    .stButton>button:focus {
+        border: 2px solid #00f5ff;
+        box-shadow: 0 0 15px rgba(0, 245, 255, 0.5);
+    }
+    
+    /* Primary Button */
+    button[kind="primary"] {
+        background: linear-gradient(135deg, #00f5ff 0%, #0099cc 100%) !important;
+        box-shadow: 0 4px 15px rgba(0, 245, 255, 0.4) !important;
+    }
+    
+    button[kind="primary"]:hover {
+        box-shadow: 0 6px 20px rgba(0, 245, 255, 0.6) !important;
+    }
+    
+    /* Sidebar */
+    .css-1d391kg {
+        background-color: #1a1a2e;
+        border-right: 2px solid #00f5ff;
+    }
+    
+    /* Radio Buttons */
+    .stRadio label {
+        color: #e0e0e0 !important;
+        font-size: 1rem;
+        padding: 0.5rem;
         border-radius: 5px;
-        background-color: #fff3cd;
-        border: 1px solid #ffeaa7;
-        color: #856404;
+        transition: all 0.3s;
+    }
+    
+    .stRadio label:hover {
+        background-color: rgba(157, 78, 221, 0.1);
+    }
+    
+    [data-baseweb="radio"] label {
+        color: #e0e0e0 !important;
+    }
+    
+    /* Sliders */
+    .stSlider label {
+        color: #e0e0e0 !important;
+        font-weight: 500;
+    }
+    
+    /* Text Input */
+    .stTextInput>div>div>input {
+        background-color: #0f0f1e;
+        color: #00f5ff;
+        border: 1px solid #00f5ff;
+        border-radius: 5px;
+    }
+    
+    .stTextInput label {
+        color: #e0e0e0 !important;
+        font-weight: 500;
+    }
+    
+    /* Camera Input */
+    .stCameraInput>div {
+        border: 2px solid #00f5ff;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 245, 255, 0.3);
+    }
+    
+    /* Metrics */
+    [data-testid="stMetricValue"] {
+        color: #00f5ff !important;
+        font-size: 2rem !important;
+        font-weight: 700 !important;
+        text-shadow: 0 0 10px #00f5ff;
+    }
+    
+    [data-testid="stMetricLabel"] {
+        color: #9d4edd !important;
+        font-weight: 500;
+    }
+    
+    /* Info/Success/Warning Boxes */
+    .stSuccess {
+        background-color: rgba(0, 245, 255, 0.1);
+        border-left: 4px solid #00f5ff;
+        border-radius: 5px;
+        padding: 1rem;
+    }
+    
+    .stError {
+        background-color: rgba(255, 107, 107, 0.1);
+        border-left: 4px solid #ff6b6b;
+        border-radius: 5px;
+        padding: 1rem;
+    }
+    
+    .stWarning {
+        background-color: rgba(255, 206, 84, 0.1);
+        border-left: 4px solid #ffce54;
+        border-radius: 5px;
+        padding: 1rem;
+    }
+    
+    .stInfo {
+        background-color: rgba(157, 78, 221, 0.1);
+        border-left: 4px solid #9d4edd;
+        border-radius: 5px;
+        padding: 1rem;
+    }
+    
+    /* Markdown Text */
+    p, li {
+        color: #d0d0d0 !important;
+    }
+    
+    /* Divider */
+    hr {
+        border-color: #00f5ff;
+        opacity: 0.3;
+    }
+    
+    /* Columns */
+    [data-testid="column"] {
+        background-color: rgba(26, 26, 46, 0.5);
+        padding: 1.5rem;
+        border-radius: 10px;
+        border: 1px solid rgba(0, 245, 255, 0.2);
+    }
+    
+    /* Spinner */
+    .stSpinner > div {
+        border-top-color: #00f5ff !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -288,104 +439,99 @@ def main():
 
 def show_dashboard():
     """Show dashboard with system status"""
-    st.header("📊 System Dashboard")
-    
-    col1, col2, col3 = st.columns(3)
+    st.markdown("<br>", unsafe_allow_html=True)
     
     stats = get_training_stats()
     total_images = sum(stats.values()) if stats else 0
     num_persons = len(stats)
+    has_model = os.path.exists(config.MODEL_FILE)
+    
+    col1, col2, col3 = st.columns(3)
     
     with col1:
-        st.metric("Persons Trained", num_persons)
+        st.metric("PERSONS TRAINED", num_persons, delta=None)
     with col2:
-        st.metric("Training Images", total_images)
+        st.metric("TRAINING IMAGES", total_images, delta=None)
     with col3:
-        has_model = os.path.exists(config.MODEL_FILE)
-        st.metric("Model Status", "✓ Ready" if has_model else "✗ Not Trained")
+        status_text = "READY" if has_model else "NOT TRAINED"
+        st.metric("MODEL STATUS", status_text)
     
-    st.divider()
+    st.markdown("<br>", unsafe_allow_html=True)
     
     if stats:
-        st.subheader("👥 Training Data")
+        st.markdown("### 👥 Training Data")
         for person, count in stats.items():
             status = "✓" if count >= config.MIN_TRAINING_IMAGES else "⚠"
-            st.write(f"{status} **{person}**: {count} images")
+            st.markdown(f"**{status} {person}** - {count} images")
     else:
-        st.info("No training data yet. Start by capturing training images!")
+        st.info("👆 Start by capturing training images in the CAPTURE tab")
     
-    st.divider()
-    
-    st.subheader("🚀 Quick Start Guide")
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("### 🚀 Quick Start")
     st.markdown("""
-    1. **Capture Training Images**: Take 10-15 photos of each person
-    2. **Train Model**: Process the images to create recognition model
-    3. **Recognize Faces**: Start real-time face recognition
+    1. **CAPTURE** - Take 10-15 photos of each person
+    2. **TRAIN** - Process images to create recognition model  
+    3. **RECOGNIZE** - Start real-time face recognition
     """)
 
 
 def show_capture_page():
     """Show training image capture page"""
-    st.header("📸 Capture Training Images")
+    st.markdown("<br>", unsafe_allow_html=True)
     
     person_name = st.text_input(
-        "Enter person's name:",
+        "👤 Enter Person's Name",
         placeholder="e.g., John Doe",
         help="Name to identify this person"
     )
     
     if not person_name:
-        st.warning("Please enter a name to begin capturing.")
+        st.info("👆 Enter a name above to begin capturing")
         return
-    
-    st.info(f"Capturing images for: **{person_name}**")
     
     col1, col2 = st.columns([2, 1])
     
-    with col2:
-        st.subheader("Instructions")
-        st.markdown("""
-        - Look at the camera
-        - Click 'Capture' button
-        - Vary expressions slightly
-        - Capture 10-15 images
-        - Keep face centered
-        """)
-        
-        stats = get_training_stats()
-        if person_name in stats:
-            st.success(f"Current images: {stats[person_name]}")
-    
     with col1:
-        # Camera input
-        img_file = st.camera_input("Take a picture", key=f"camera_{st.session_state.capture_count}")
+        st.markdown(f"### 📸 Capturing: **{person_name}**")
+        img_file = st.camera_input("Position your face in the camera", key=f"camera_{st.session_state.capture_count}")
         
         if img_file is not None:
-            # Convert to OpenCV format
             image = Image.open(img_file)
             image_np = np.array(image)
             image_bgr = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
             
-            # Detect face
             face_cascade = load_face_detector()
             faces, gray = detect_faces(image_bgr, face_cascade)
             
             if len(faces) > 0:
-                # Draw rectangle on first face
                 x, y, w, h = faces[0]
-                cv2.rectangle(image_np, (x, y), (x+w, y+h), (0, 255, 0), 2)
-                st.image(image_np, caption="Face Detected!", use_container_width=True)
+                cv2.rectangle(image_np, (x, y), (x+w, y+h), (0, 255, 0), 3)
+                st.image(image_np, use_container_width=True)
                 
-                if st.button("💾 Save This Image", type="primary"):
-                    # Save face crop
+                if st.button("💾 SAVE IMAGE", type="primary", use_container_width=True):
                     face_crop = image_bgr[y:y+h, x:x+w]
-                    filepath = save_training_image(face_crop, person_name)
-                    st.success(f"✓ Image saved! Total: {get_training_stats().get(person_name, 0)}")
+                    save_training_image(face_crop, person_name)
+                    current_count = get_training_stats().get(person_name, 0)
+                    st.success(f"✓ Saved! Total: {current_count} images")
                     st.session_state.capture_count += 1
                     time.sleep(0.5)
                     st.rerun()
             else:
-                st.warning("⚠ No face detected. Please try again with better lighting.")
+                st.warning("⚠ No face detected. Ensure good lighting and face the camera.")
+    
+    with col2:
+        st.markdown("### 📋 Instructions")
+        st.markdown("""
+        - Face the camera directly
+        - Keep face centered
+        - Vary expressions slightly
+        - Capture **10-15 images**
+        - Ensure good lighting
+        """)
+        st.markdown("---")
+        stats = get_training_stats()
+        if person_name in stats:
+            st.metric("Images Saved", stats[person_name])
 
 
 def show_training_page():
@@ -418,51 +564,36 @@ def show_training_page():
 
 def show_recognition_page():
     """Show face recognition page"""
-    st.header("🔍 Face Recognition")
+    st.markdown("<br>", unsafe_allow_html=True)
     
     if not FACE_RECOGNITION_AVAILABLE:
-        st.error("❌ Face recognition module not available. Please check installation.")
-        st.info("Make sure `opencv-contrib-python` is installed: `pip install opencv-contrib-python`")
+        st.error("❌ Face recognition module not available")
+        st.info("Install: `pip install opencv-contrib-python-headless`")
         return
     
     if st.session_state.trained_model is None:
-        st.error("❌ No trained model found. Please train a model first.")
+        st.error("❌ No trained model found")
+        st.info("👆 Train a model first in the TRAIN tab")
         return
-    
-    st.info("📹 Enable your camera below to start recognition")
     
     col1, col2 = st.columns([2, 1])
     
-    with col2:
-        st.subheader("Settings")
-        st.write(f"**Threshold:** {st.session_state.recognition_threshold}")
-        st.write(f"**Persons:** {len(st.session_state.label_ids)}")
-        
-        st.divider()
-        
-        st.subheader("Detected")
-        detected_placeholder = st.empty()
-    
     with col1:
-        img_file = st.camera_input("Camera Feed")
+        st.markdown("### 🔍 Live Recognition")
+        img_file = st.camera_input("Enable camera to start", key="recognition_camera")
         
         if img_file is not None:
-            # Convert to OpenCV format
             image = Image.open(img_file)
             image_np = np.array(image)
             image_bgr = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
             
-            # Detect faces
             face_cascade = load_face_detector()
             faces, gray = detect_faces(image_bgr, face_cascade)
             
             detected_names = []
             
-            # Process each face
             for (x, y, w, h) in faces:
                 face_gray = gray[y:y+h, x:x+w]
-                
-                # Recognize
                 name, confidence = recognize_face(
                     face_gray,
                     st.session_state.trained_model,
@@ -470,26 +601,29 @@ def show_recognition_page():
                     st.session_state.recognition_threshold
                 )
                 
-                # Draw rectangle and label
                 color = (0, 255, 0) if name != "Unknown" else (0, 0, 255)
-                cv2.rectangle(image_np, (x, y), (x+w, y+h), color, 2)
-                
+                cv2.rectangle(image_np, (x, y), (x+w, y+h), color, 3)
                 label = f"{name} ({confidence:.1f})"
                 cv2.putText(image_np, label, (x, y-10),
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
-                
-                detected_names.append(f"{name} (conf: {confidence:.1f})")
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
+                detected_names.append((name, confidence))
             
-            # Display result
-            st.image(image_np, caption="Recognition Result", use_container_width=True)
-            
-            # Update detected persons
-            with detected_placeholder.container():
-                if detected_names:
-                    for name in detected_names:
-                        st.write(f"👤 {name}")
+            st.image(image_np, use_container_width=True)
+    
+    with col2:
+        st.markdown("### 📊 Status")
+        st.metric("Threshold", st.session_state.recognition_threshold)
+        st.metric("Persons", len(st.session_state.label_ids))
+        st.markdown("---")
+        st.markdown("### 👤 Detected")
+        if img_file is not None and detected_names:
+            for name, conf in detected_names:
+                if name != "Unknown":
+                    st.success(f"**{name}**\n*Confidence: {conf:.1f}*")
                 else:
-                    st.write("No faces detected")
+                    st.warning(f"**Unknown**\n*Confidence: {conf:.1f}*")
+        else:
+            st.caption("No faces detected")
 
 
 if __name__ == "__main__":
