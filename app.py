@@ -442,7 +442,9 @@ def init_session_state():
     if 'trained_model' not in st.session_state:
         st.session_state.trained_model = None
     if 'label_ids' not in st.session_state:
-        st.session_state.label_ids = {}
+        st.session_state.label_ids = {}  # name_to_label mapping
+    if 'label_to_names' not in st.session_state:
+        st.session_state.label_to_names = {}  # label_id to name mapping for recognition
     if 'capture_count' not in st.session_state:
         st.session_state.capture_count = 0
     if 'recognition_threshold' not in st.session_state:
@@ -536,7 +538,8 @@ def train_recognition_model():
             
             # Load into session state
             st.session_state.trained_model = trainer.recognizer
-            st.session_state.label_ids = trainer.name_to_label
+            st.session_state.label_ids = trainer.name_to_label  # For reference
+            st.session_state.label_to_names = trainer.label_to_name  # For recognition lookup
             
             progress_bar.progress(100)
             status_text.text("✓ Training complete!")
@@ -558,8 +561,9 @@ def load_trained_model():
                 labels_data = pickle.load(f)
             
             st.session_state.trained_model = recognizer
-            # Use name_to_label dict from saved labels
-            st.session_state.label_ids = labels_data.get("name_to_label", labels_data)
+            # Load both mappings
+            st.session_state.label_ids = labels_data.get("name_to_label", {})
+            st.session_state.label_to_names = labels_data.get("label_to_name", {})
             return True
         except AttributeError:
             # cv2.face not available
@@ -569,21 +573,23 @@ def load_trained_model():
     return False
 
 
-def recognize_face(face_gray, recognizer, label_ids, threshold):
+def recognize_face(face_gray, recognizer, label_to_names, threshold):
     """Recognize a face"""
     if recognizer is None:
         return "No Model", 100.0
     
+    # Resize face to match training size
     face_resized = cv2.resize(face_gray, config.FACE_SIZE)
-    label, confidence = recognizer.predict(face_resized)
     
+    # Predict returns (label_id, confidence)
+    # Lower confidence = better match in LBPH
+    label_id, confidence = recognizer.predict(face_resized)
+    
+    # Check if confidence is below threshold (lower is better)
     if confidence < threshold:
-        # label_ids is name_to_label dict: {name: label_id}
-        # Find name by label_id
-        for name, label_id in label_ids.items():
-            if label_id == label:
-                return name, confidence
-        return "Unknown", confidence
+        # Look up name using label_id
+        name = label_to_names.get(label_id, "Unknown")
+        return name, confidence
     else:
         return "Unknown", confidence
 
@@ -800,7 +806,8 @@ def show_recognition_page():
         status_text = "🟢 LIVE" if st.session_state.recognition_active else "⚫ IDLE"
         st.markdown(f'<p style="color: {status_color}; font-size: 1.2rem; font-weight: 700;">{status_text}</p>', unsafe_allow_html=True)
         st.metric("Threshold", st.session_state.recognition_threshold)
-        st.metric("Persons", len(st.session_state.label_ids))
+        num_persons = len(st.session_state.label_to_names) if 'label_to_names' in st.session_state and st.session_state.label_to_names else len(st.session_state.label_ids)
+        st.metric("Persons", num_persons)
         if st.session_state.recognition_active:
             st.metric("Frames Processed", st.session_state.frame_counter)
         
@@ -840,7 +847,7 @@ def show_recognition_page():
                     name, confidence = recognize_face(
                         face_gray,
                         st.session_state.trained_model,
-                        st.session_state.label_ids,
+                        st.session_state.label_to_names,
                         st.session_state.recognition_threshold
                     )
                     
