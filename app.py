@@ -386,22 +386,28 @@ def main():
     init_session_state()
     
     # Header
-    st.markdown('<h1 class="main-header">🎭 Real-Time Face Recognition</h1>', unsafe_allow_html=True)
-    st.markdown('<p class="subtitle">Powered by OpenCV + LBPH Algorithm</p>', unsafe_allow_html=True)
+    st.markdown("""
+    <div style='text-align: center; padding: 2rem 0;'>
+        <h1>🔮 FACE RECOGNITION SYSTEM</h1>
+        <p style='color: #9d4edd; font-size: 1.1rem; margin-top: -1rem;'>Neural Network Powered Identification</p>
+    </div>
+    """, unsafe_allow_html=True)
     
-    # Sidebar
+    # Simple Tab Navigation
+    tab1, tab2, tab3, tab4 = st.tabs(["📊 DASHBOARD", "📸 CAPTURE", "🎓 TRAIN", "🔍 RECOGNIZE"])
+    
+    with tab1:
+        show_dashboard()
+    with tab2:
+        show_capture_page()
+    with tab3:
+        show_training_page()
+    with tab4:
+        show_recognition_page()
+    
+    # Settings in sidebar (collapsed by default)
     with st.sidebar:
-        st.header("⚙️ Control Panel")
-        
-        mode = st.radio(
-            "Select Mode:",
-            ["📊 Dashboard", "📸 Capture Training Images", "🎓 Train Model", "🔍 Recognize Faces"],
-            label_visibility="visible"
-        )
-        
-        st.divider()
-        
-        # Threshold adjustment
+        st.markdown("### ⚙️ SETTINGS")
         st.session_state.recognition_threshold = st.slider(
             "Recognition Threshold",
             min_value=30,
@@ -411,30 +417,17 @@ def main():
         )
         
         st.divider()
-        
-        # Model status
-        st.subheader("📦 Model Status")
+        st.markdown("### 📦 MODEL STATUS")
         if st.session_state.trained_model is not None:
-            st.success("✓ Model Loaded")
-            st.write(f"**Persons:** {len(st.session_state.label_ids)}")
+            st.success(f"✓ Active Model\n**{len(st.session_state.label_ids)} Person(s)**")
             for name in st.session_state.label_ids.keys():
-                st.write(f"- {name}")
+                st.write(f"• {name}")
         else:
             if load_trained_model():
-                st.success("✓ Model Loaded")
+                st.success(f"✓ Model Loaded\n**{len(st.session_state.label_ids)} Person(s)**")
             else:
-                st.warning("⚠ No trained model")
-                st.info("Train a model first!")
-    
-    # Main content
-    if mode == "📊 Dashboard":
-        show_dashboard()
-    elif mode == "📸 Capture Training Images":
-        show_capture_page()
-    elif mode == "🎓 Train Model":
-        show_training_page()
-    elif mode == "🔍 Recognize Faces":
-        show_recognition_page()
+                st.warning("⚠ No Model")
+                st.caption("Train a model first")
 
 
 def show_dashboard():
